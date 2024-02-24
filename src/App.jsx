@@ -73,28 +73,29 @@ function App() {
     const imageFormat = ["image/jpeg", "image/png"];
     const pdfFormat = "application/pdf";
     if (FileType === "Pdf") {
-      console.log(file);
       if (file.type === pdfFormat) {
         setForm({
           ...Form,
           pdfFile: { fileName: file.name, fileType: file.type },
         });
+        return;
       } else {
         alert("Pdf should be in pdf format");
+        return;
       }
     } else if (FileType === "Image") {
-      console.log(file);
       if (imageFormat.includes(file.type)) {
         setForm({
           ...Form,
-          imageFile: { fileName: file.name, fileType: file.type },
+          imageFile: { fileName: file.name, fileType: "image" },
         });
+        return;
       } else {
         alert("Image should be jpeg and png format");
+        return;
       }
     }
     const newFiles = [...files];
-    newFiles[index].file = file;
     newFiles[index].fileName = file.name;
     newFiles[index].fileType = FileType;
     setFiles(newFiles);
@@ -136,10 +137,9 @@ function App() {
     newFiles.splice(index, 1);
     setFiles(newFiles);
   };
-  const handleClick = () => {
-    if (hiddenFileInput.current) {
-      hiddenFileInput.current.click();
-    }
+  const handleClick = (e) => {
+    e.preventDefault();
+    hiddenFileInput.current.click();
   };
   async function handleSubmit(e) {
     e.preventDefault();
