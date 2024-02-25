@@ -23,12 +23,25 @@ function App() {
     pdfFile: {
       fileName: "",
       fileType: "",
+      file: null,
     },
     imageFile: {
       fileName: "",
       fileType: "",
+      file: null,
     },
   });
+  const formData = new FormData();
+  formData.append("firstName", Form.firstName);
+  formData.append("lastName", Form.lastName);
+  formData.append("birthDate", Form.birthDate);
+  formData.append("email", Form.email);
+  formData.append("pAddressstreet1", Form.permanentAddress.street1);
+  formData.append("pAddressstreet2", Form.permanentAddress.street2);
+  formData.append("rAddressstreet1", Form.residentAddress.street1);
+  formData.append("rAddressstreet2", Form.residentAddress.street2);
+  formData.append("image", Form.imageFile.file);
+  formData.append("pdf", Form.pdfFile.file);
   function handleCheckbox(e) {
     const { checked } = e.target;
     if (checked) {
@@ -65,7 +78,7 @@ function App() {
     }
   }
   const [files, setFiles] = useState([
-    { fileName: "", fileType: "pdf", file: null },
+    { fileName: "", fileType: "", file: null },
   ]);
 
   const handleFileChange = (index, event) => {
@@ -76,23 +89,19 @@ function App() {
       if (file.type === pdfFormat) {
         setForm({
           ...Form,
-          pdfFile: { fileName: file.name, fileType: file.type },
+          pdfFile: { fileName: file.name, fileType: "pdf", file: file },
         });
-        return;
       } else {
         alert("Pdf should be in pdf format");
-        return;
       }
     } else if (FileType === "Image") {
       if (imageFormat.includes(file.type)) {
         setForm({
           ...Form,
-          imageFile: { fileName: file.name, fileType: "image" },
+          imageFile: { fileName: file.name, fileType: "image", file: file },
         });
-        return;
       } else {
         alert("Image should be jpeg and png format");
-        return;
       }
     }
     const newFiles = [...files];
@@ -120,16 +129,7 @@ function App() {
   };
 
   const handleAddFile = (index) => {
-    setFiles((prevFiles) => {
-      return [
-        ...prevFiles,
-        {
-          fileName: prevFiles[index].fileName,
-          fileType: prevFiles[index].fileType,
-          file: null,
-        },
-      ];
-    });
+    setFiles([...files, { fileName: "", fileType: "", file: null }]);
   };
 
   const handleDeleteFile = (index) => {
@@ -145,7 +145,10 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/v1/submit", Form);
+      const res = await axios.post(
+        "http://localhost:5000/api/v1/submit",
+        formData
+      );
       if (res.data.success) {
         setLoading(false);
         alert(res.data.message);
