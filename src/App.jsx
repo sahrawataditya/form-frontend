@@ -158,9 +158,8 @@ function App() {
         alert(res.data.message);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
-      alert(error.message);
+      alert(error.response.data.message);
     }
   }
   return (
